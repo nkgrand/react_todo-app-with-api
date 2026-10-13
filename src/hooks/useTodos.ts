@@ -105,12 +105,12 @@ export const useTodos = () => {
       });
   };
 
-  const handleClearCompleted = () => {
-    todos
-      .filter(todo => todo.completed)
-      .forEach(todo => {
-        handleDelete(todo.id).catch(() => {});
-      });
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    await Promise.all(
+      completedTodos.map(todo => handleDelete(todo.id).catch(() => {})),
+    );
   };
 
   const handleUpdate = (id: number, changes: TodoChanges) => {
@@ -138,14 +138,14 @@ export const useTodos = () => {
       );
   };
 
-  const handleToggleAll = () => {
+  const handleToggleAll = async () => {
     const completed = !hasAllTodosCompleted;
 
-    todos
-      .filter(todo => todo.completed !== completed)
-      .forEach(todo => {
-        handleUpdate(todo.id, { completed }).catch(() => {});
-      });
+    await Promise.all(
+      todos
+        .filter(todo => todo.completed !== completed)
+        .map(todo => handleUpdate(todo.id, { completed }).catch(() => {})),
+    );
   };
 
   return {
